@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const db = require("../db");
 
 const router = express.Router();
-
+// Configure password authentication strategy.
 passport.use(
   new LocalStrategy((username, passwod, cb) => {
     db.get("SELECT * FROM users WHERE username = ?", [username], (err, row) => {
@@ -20,6 +20,15 @@ passport.use(
     });
   })
 );
+
+// Configure session management.
+passport.serializeUser((user, cb) => {
+  process.nextTick(() => cb(null, { id: user.id, username: user.username }));
+});
+
+passport.deserializeUser((user, cb) => {
+  process.nextTick(() => cb(null, { user }));
+});
 
 router.get("/login", (req, res) => {
   res.render("login");

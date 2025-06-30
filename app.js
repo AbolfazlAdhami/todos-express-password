@@ -27,6 +27,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+// add session support to the app and then authenticate the session.
 app.use(
   session({
     secret: "keyboard cat",
@@ -36,6 +38,8 @@ app.use(
   })
 );
 app.use(passport.authenticate("session"));
+
+// csef token sesstions
 app.use(csrf());
 app.use(function (req, res, next) {
   const msgs = req.session.messages || [];
@@ -49,6 +53,7 @@ app.use(function (req, res, next) {
   next();
 });
 
+// main routeF
 app.use("/", indexRouter);
 app.use("/", authRouter);
 
