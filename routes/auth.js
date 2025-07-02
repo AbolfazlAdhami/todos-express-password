@@ -4,7 +4,6 @@ const LocalStrategy = require("passport-local");
 const crypto = require("crypto");
 const db = require("../db");
 
-const router = express.Router();
 // Configure password authentication strategy.
 passport.use(
   new LocalStrategy((username, passwod, cb) => {
@@ -30,15 +29,29 @@ passport.deserializeUser((user, cb) => {
   process.nextTick(() => cb(null, { user }));
 });
 
+const router = express.Router();
+
+// GET /login;
 router.get("/login", (req, res) => {
   res.render("login");
 });
+
+//  POST /login/password
 router.post(
   "/login/password",
   passport.authenticate("local", {
-    successRedirect: "/",
+    successReturnToOrRedirect: "/",
     failureRedirect: "/login",
+    failureMessage: true,
   })
 );
+
+// POST /logout
+router.post("/logout", (req, res, next) => {
+  req.logOut((err) => {
+    if (err) return next(err);
+    return res.redirect("/");
+  });
+});
 
 module.exports = router;
